@@ -2,70 +2,88 @@
 <head>
 <style>
 button {
-height: 50px;
-font-size: 2em;
+	height: 50px;
+	font-size: 2em;
+	border: 5px solid #000;
+	border-top: 5px solid #666;
+	border-left: 5px solid #666;
+	margin: 0px 20px;
 }
-
+button:hover {
+	border: 5px solid #0aa;
+	border-top: 5px solid #0ff;
+	border-left: 5px solid #0ff;
+}
 .buttonwrapper {
-position: absolute;
-left: 10%;
-width: 80%;
-text-align: center;
+	position: absolute;
+	left: 5%;
+	width: 90%;
+	text-align: center;
 }
 
 .wrapper {
-position: absolute;
-top: 100px;
-left: 400px;
-width: 625px;
-height: 625px;
+	position: absolute;
+	left: 50%;
+	top: 100px;
+	margin-left: -312px;
+	width: 625px;
+	height: 625px;
+}
+
+p {
+	position: absolute;
+	top: 20px;
+	left: 0px;
+	font-family: Verdana;
+	font-size: 2em;
+	color: #333;
 }
 
 .square {
-position: absolute;
-width: 200px;
-height: 200px;
-font-size: 11em;
-text-align: center;
-line-height:200px;
-color:#c00;
-font-family: Verdana;
+	position: absolute;
+	width: 200px;
+	height: 200px;
+	text-align: center;
+	line-height:200px;
+	color:#c00;
+	font-family: Verdana;
+	font-size: 11em;
 }
 .square:hover {
-background-color: #0ff;
+	background-color: #0ff;
 }
 
 .top {
-top: 0px;
+	top: 0px;
 }
 .midv {
-top: 205px;
+	top: 205px;
 }
 .bottom {
-top: 415px;
+	top: 415px;
 }
 
 .left {
-left: 0px;
+	left: 0px;
 }
 .midh {
-left: 205px;
+	left: 205px;
 }
 .right {
-left: 415px;
+	left: 415px;
 }
 
 .top, .midv {
-border-bottom: 5px solid black;
+	border-bottom: 5px solid black;
 }
 .bottom, .midv {
-border-top: 5px solid black;
+	border-top: 5px solid black;
 }
 .left, .midh {
-border-right: 5px solid black;
+	border-right: 5px solid black;
 }
 .right, .midh {
-border-left: 5px solid black;
+	border-left: 5px solid black;
 }
 
 .diagonal {
@@ -83,15 +101,15 @@ border-left: 5px solid black;
 <div class="buttonwrapper"><button id="newgame">New Game</button><button id="mymarker">I am: X!</button><button id="mycolor">I am: blue!</button>
 <p>It is now <span id="nextplayer">X</span>'s turn.<span id="winnercircle"></span></div>
 <div class="wrapper"><div id="imgwrapper"><img id="strikeimg" class="diagonal" border="0"></div>
-<div id="tl" class="square top left">X</div>
-<div id="tm" class="square top midh">O</div>
-<div id="tr" class="square top right">X</div><br>
-<div id="ml" class="square midv left">O</div>
-<div id="mm" class="square midv midh">X</div>
-<div id="mr" class="square midv right">O</div><br>
-<div id="bl" class="square bottom left">X</div>
-<div id="bm" class="square bottom midh">O</div>
-<div id="br" class="square bottom right">X</div>
+	<div id="tl" class="square top left">X</div>
+	<div id="tm" class="square top midh">O</div>
+	<div id="tr" class="square top right">X</div><br>
+	<div id="ml" class="square midv left">O</div>
+	<div id="mm" class="square midv midh">X</div>
+	<div id="mr" class="square midv right">O</div><br>
+	<div id="bl" class="square bottom left">X</div>
+	<div id="bm" class="square bottom midh">O</div>
+	<div id="br" class="square bottom right">X</div>
 </div>
 
 
@@ -100,8 +118,22 @@ var classname = document.getElementsByClassName("square");
 var mymarker = 'X';
 var othermarker = 'O';
 var mycolor = 'blue';
-var othercolor = 'black';
+var othercolor = 'gray';
 var winner = false;
+
+// Get squares by name
+var tl = document.getElementById("tl");
+var tm = document.getElementById("tm");
+var tr = document.getElementById("tr");
+var ml = document.getElementById("ml");
+var mm = document.getElementById("mm");
+var mr = document.getElementById("mr");
+var bl = document.getElementById("bl");
+var bm = document.getElementById("bm");
+var br = document.getElementById("br");
+
+var winnercircle = document.getElementById("winnercircle");
+var strikeimg    = document.getElementById("strikeimg");
 
 //http://stackoverflow.com/questions/12987719/javascript-how-to-randomly-sample-items-without-replacement
 /**
@@ -122,107 +154,114 @@ var range = function( min, max, rand ) {
 }
 
 var checkWinner = function() {
+	// Cycle through winning combinations to determine if 3 in a row was placed
 	if(winner == true){
 		return;
 	} else {
 		// horizontals
-		if(document.getElementById("tl").innerHTML == document.getElementById("tm").innerHTML &&
-		   document.getElementById("tl").innerHTML == document.getElementById("tr").innerHTML &&
-		   document.getElementById("tl").innerHTML != "") {
+		if(tl.innerHTML == tm.innerHTML &&
+		   tl.innerHTML == tr.innerHTML &&
+		   tl.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("tl").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./horizontal.png";
-		   document.getElementById("strikeimg").style.margin = "-205px 0px 205px";
-		} else if(document.getElementById("ml").innerHTML == document.getElementById("mm").innerHTML &&
-		   document.getElementById("ml").innerHTML == document.getElementById("mr").innerHTML &&
-		   document.getElementById("ml").innerHTML != "") {
+		   winnercircle.innerHTML = tl.innerHTML + " won!";
+		   strikeimg.src = "./horizontal.png";
+		   strikeimg.style.margin = "-205px 0px 205px";
+		} else if(ml.innerHTML == mm.innerHTML &&
+			  ml.innerHTML == mr.innerHTML &&
+			  ml.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("ml").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./horizontal.png";
-		   document.getElementById("strikeimg").style.margin = "0px";
-		} else if(document.getElementById("bl").innerHTML == document.getElementById("bm").innerHTML &&
-		   document.getElementById("bl").innerHTML == document.getElementById("br").innerHTML &&
-		   document.getElementById("bl").innerHTML != "") {
+		   winnercircle.innerHTML = ml.innerHTML + " won!";
+		   strikeimg.src = "./horizontal.png";
+		   strikeimg.style.margin = "0px";
+		} else if(bl.innerHTML == document.getElementById("bm").innerHTML &&
+			  bl.innerHTML == document.getElementById("br").innerHTML &&
+			  bl.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("bl").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./horizontal.png";
-		   document.getElementById("strikeimg").style.margin = "205px 0px -205px";
+		   winnercircle.innerHTML = bl.innerHTML + " won!";
+		   strikeimg.src = "./horizontal.png";
+		   strikeimg.style.margin = "205px 0px -205px";
 		}
 		// verticals
-		else if(document.getElementById("tl").innerHTML == document.getElementById("ml").innerHTML &&
-		   document.getElementById("tl").innerHTML == document.getElementById("bl").innerHTML &&
-		   document.getElementById("tl").innerHTML != "") {
+		else if(tl.innerHTML == ml.innerHTML &&
+		 	tl.innerHTML == bl.innerHTML &&
+			tl.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("tl").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./vertical.png";
-		   document.getElementById("strikeimg").style.margin = "0px 0px 0px -205px";
-		} else if(document.getElementById("tm").innerHTML == document.getElementById("mm").innerHTML &&
-		   document.getElementById("tm").innerHTML == document.getElementById("bm").innerHTML &&
-		   document.getElementById("tm").innerHTML != "") {
+		   winnercircle.innerHTML = tl.innerHTML + " won!";
+		   strikeimg.src = "./vertical.png";
+		   strikeimg.style.margin = "0px 0px 0px -205px";
+		} else if(tm.innerHTML == mm.innerHTML &&
+			  tm.innerHTML == bm.innerHTML &&
+			  tm.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("tm").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./vertical.png";
-		   document.getElementById("strikeimg").style.margin = "0px";
-		} else if(document.getElementById("tr").innerHTML == document.getElementById("mr").innerHTML &&
-		   document.getElementById("tr").innerHTML == document.getElementById("br").innerHTML &&
-		   document.getElementById("tr").innerHTML != "") {
+		   winnercircle.innerHTML = tm.innerHTML + " won!";
+		   strikeimg.src = "./vertical.png";
+		   strikeimg.style.margin = "0px";
+		} else if(tr.innerHTML == mr.innerHTML &&
+			  tr.innerHTML == br.innerHTML &&
+			  tr.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("tr").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./vertical.png";
-		   document.getElementById("strikeimg").style.margin = "0px 0px 0px 205px";
+		   winnercircle.innerHTML = tr.innerHTML + " won!";
+		   strikeimg.src = "./vertical.png";
+		   strikeimg.style.margin = "0px 0px 0px 205px";
 		}
 		// diagonals
-		else if(document.getElementById("tl").innerHTML == document.getElementById("mm").innerHTML &&
-		   document.getElementById("tl").innerHTML == document.getElementById("br").innerHTML &&
-		   document.getElementById("tl").innerHTML != "") {
+		else if(tl.innerHTML == mm.innerHTML &&
+			tl.innerHTML == br.innerHTML &&
+			tl.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("tl").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./backslash.png";
-		} else if(document.getElementById("tr").innerHTML == document.getElementById("mm").innerHTML &&
-		   document.getElementById("tr").innerHTML == document.getElementById("bl").innerHTML &&
-		   document.getElementById("tr").innerHTML != "") {
+		   winnercircle.innerHTML = tl.innerHTML + " won!";
+		   strikeimg.src = "./backslash.png";
+		} else if(tr.innerHTML == mm.innerHTML &&
+			  tr.innerHTML == bl.innerHTML &&
+			  tr.innerHTML != "") {
 		   winner = true;
-		   document.getElementById("winnercircle").innerHTML = document.getElementById("tr").innerHTML + " won!";
-		   document.getElementById("strikeimg").src = "./slash.png";
+		   winnercircle.innerHTML = tr.innerHTML + " won!";
+		   strikeimg.src = "./slash.png";
 		}
 	};
 };
 
 var placeMark = function() {
+	// Select a square and put your mark
     this.innerHTML = mymarker;
-	//this.className += " me";
 	this.style.color = mycolor;
 	document.getElementById("nextplayer").innerHTML = othermarker;
 	checkWinner();
+	
+	// The computer places a mark
 	placeRandomOtherMark();
 	checkWinner();
 };
 
 var placeRandomOtherMark = function() {
+	// Check the squares at random to find an open square
 	var shuffled = range(0,8,true);
 	var num;
 	for (var i = 0; i < classname.length; i++) {
 		num = shuffled[i];
 		if(classname[num].innerHTML == ''){
-				classname[num].innerHTML = othermarker;
-				classname[num].style.color = othercolor;
-				document.getElementById("nextplayer").innerHTML = mymarker;
-				return;
-			};
+			classname[num].innerHTML = othermarker;
+			classname[num].style.color = othercolor;
+			document.getElementById("nextplayer").innerHTML = mymarker;
+			return;
+		};
 	};
 };
 
 var newGame = function() {
+	// Clear the board
 	for (var i = 0; i < classname.length; i++) {
 		classname[i].innerHTML = '';
 	}
-	document.getElementById("winnercircle").innerHTML = "";
-	document.getElementById("strikeimg").src = "";
-    document.getElementById("strikeimg").style.margin = "0px";
+	winnercircle.innerHTML = "";
+	strikeimg.src = "./blank.png";
+    	strikeimg.style.margin = "0px";
 	winner = false;
+	refreshColor();
 };
 
 var myMarker = function() {
+	// Cycle through available markers
 	if(mymarker == 'X'){
 		mymarker = 'O'
 		othermarker = 'X'
@@ -232,9 +271,25 @@ var myMarker = function() {
 	}
 	this.innerHTML = "I am: " + mymarker + "!";	
 	document.getElementById("nextplayer").innerHTML = mymarker;
+	
+	var tempcolor = othercolor;
+	othercolor = mycolor;
+	mycolor = tempcolor;
+	refreshColor();
+	
 };
 
+var refreshColor = function() {
+	// Redraw the color chooser button
+	var colorbutton = document.getElementById("mycolor")
+	colorbutton.innerHTML = "I am: " + mycolor + "!";
+	colorbutton.style.background = mycolor;
+	colorbutton.style.color = 'white';
+}
+
 var myColor = function() {
+	// When the color button is pushed, cycle through the available color palette
+	//https://www.w3schools.com/colors/colors_names.asp
 	switch ( mycolor ) {
 		case "blue":
 			mycolor = "brown";
@@ -249,20 +304,26 @@ var myColor = function() {
 			mycolor = "DeepPink";
 			break;
 		case "DeepPink":
+			mycolor = "gray";
+			break;
+		case "gray":
 			mycolor = "blue";
 			break;
 			}
-	this.innerHTML = "I am: " + mycolor + "!";
-	this.style.background = mycolor;
-	this.style.color = 'white';
+	refreshColor();
 };
 
+// Place event listeners on page load
 for (var i = 0; i < classname.length; i++) {
     classname[i].addEventListener('click', placeMark, false);
 }
 document.getElementById("newgame").addEventListener("click", newGame);
 document.getElementById("mymarker").addEventListener("click", myMarker);
 document.getElementById("mycolor").addEventListener("click", myColor);
+
+// Load defaults
+refreshColor();
+strikeimg.src = "./blank.png";
 </script>
 </body>
 </html>
