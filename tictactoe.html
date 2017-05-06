@@ -1,0 +1,268 @@
+<html>
+<head>
+<style>
+button {
+height: 50px;
+font-size: 2em;
+}
+
+.buttonwrapper {
+position: absolute;
+left: 10%;
+width: 80%;
+text-align: center;
+}
+
+.wrapper {
+position: absolute;
+top: 100px;
+left: 400px;
+width: 625px;
+height: 625px;
+}
+
+.square {
+position: absolute;
+width: 200px;
+height: 200px;
+font-size: 11em;
+text-align: center;
+line-height:200px;
+color:#c00;
+font-family: Verdana;
+}
+.square:hover {
+background-color: #0ff;
+}
+
+.top {
+top: 0px;
+}
+.midv {
+top: 205px;
+}
+.bottom {
+top: 415px;
+}
+
+.left {
+left: 0px;
+}
+.midh {
+left: 205px;
+}
+.right {
+left: 415px;
+}
+
+.top, .midv {
+border-bottom: 5px solid black;
+}
+.bottom, .midv {
+border-top: 5px solid black;
+}
+.left, .midh {
+border-right: 5px solid black;
+}
+.right, .midh {
+border-left: 5px solid black;
+}
+
+.diagonal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
+
+</style>
+</head>
+<body>
+<div class="buttonwrapper"><button id="newgame">New Game</button><button id="mymarker">I am: X!</button><button id="mycolor">I am: blue!</button>
+<p>It is now <span id="nextplayer">X</span>'s turn.<span id="winnercircle"></span></div>
+<div class="wrapper"><div id="imgwrapper"><img id="strikeimg" class="diagonal" border="0"></div>
+<div id="tl" class="square top left">X</div>
+<div id="tm" class="square top midh">O</div>
+<div id="tr" class="square top right">X</div><br>
+<div id="ml" class="square midv left">O</div>
+<div id="mm" class="square midv midh">X</div>
+<div id="mr" class="square midv right">O</div><br>
+<div id="bl" class="square bottom left">X</div>
+<div id="bm" class="square bottom midh">O</div>
+<div id="br" class="square bottom right">X</div>
+</div>
+
+
+<script>
+var classname = document.getElementsByClassName("square");
+var mymarker = 'X';
+var othermarker = 'O';
+var mycolor = 'blue';
+var othercolor = 'black';
+var winner = false;
+
+//http://stackoverflow.com/questions/12987719/javascript-how-to-randomly-sample-items-without-replacement
+/**
+* range Get an array of numbers within a range
+* @param min {number} Lowest number in array
+* @param max {number} Highest number in array
+* @param rand {bool} Shuffle array
+* @return {array}
+*/
+var range = function( min, max, rand ) {
+  var arr = ( new Array( ++max - min ) )
+    .join('.').split('.')
+    .map(function( v,i ){ return min + i })
+  return rand
+    ? arr.map(function( v ) { return [ Math.random(), v ] })
+       .sort().map(function( v ) { return v[ 1 ] })
+    : arr
+}
+
+var checkWinner = function() {
+	if(winner == true){
+		return;
+	} else {
+		// horizontals
+		if(document.getElementById("tl").innerHTML == document.getElementById("tm").innerHTML &&
+		   document.getElementById("tl").innerHTML == document.getElementById("tr").innerHTML &&
+		   document.getElementById("tl").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("tl").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./horizontal.png";
+		   document.getElementById("strikeimg").style.margin = "-205px 0px 205px";
+		} else if(document.getElementById("ml").innerHTML == document.getElementById("mm").innerHTML &&
+		   document.getElementById("ml").innerHTML == document.getElementById("mr").innerHTML &&
+		   document.getElementById("ml").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("ml").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./horizontal.png";
+		   document.getElementById("strikeimg").style.margin = "0px";
+		} else if(document.getElementById("bl").innerHTML == document.getElementById("bm").innerHTML &&
+		   document.getElementById("bl").innerHTML == document.getElementById("br").innerHTML &&
+		   document.getElementById("bl").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("bl").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./horizontal.png";
+		   document.getElementById("strikeimg").style.margin = "205px 0px -205px";
+		}
+		// verticals
+		else if(document.getElementById("tl").innerHTML == document.getElementById("ml").innerHTML &&
+		   document.getElementById("tl").innerHTML == document.getElementById("bl").innerHTML &&
+		   document.getElementById("tl").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("tl").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./vertical.png";
+		   document.getElementById("strikeimg").style.margin = "0px 0px 0px -205px";
+		} else if(document.getElementById("tm").innerHTML == document.getElementById("mm").innerHTML &&
+		   document.getElementById("tm").innerHTML == document.getElementById("bm").innerHTML &&
+		   document.getElementById("tm").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("tm").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./vertical.png";
+		   document.getElementById("strikeimg").style.margin = "0px";
+		} else if(document.getElementById("tr").innerHTML == document.getElementById("mr").innerHTML &&
+		   document.getElementById("tr").innerHTML == document.getElementById("br").innerHTML &&
+		   document.getElementById("tr").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("tr").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./vertical.png";
+		   document.getElementById("strikeimg").style.margin = "0px 0px 0px 205px";
+		}
+		// diagonals
+		else if(document.getElementById("tl").innerHTML == document.getElementById("mm").innerHTML &&
+		   document.getElementById("tl").innerHTML == document.getElementById("br").innerHTML &&
+		   document.getElementById("tl").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("tl").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./backslash.png";
+		} else if(document.getElementById("tr").innerHTML == document.getElementById("mm").innerHTML &&
+		   document.getElementById("tr").innerHTML == document.getElementById("bl").innerHTML &&
+		   document.getElementById("tr").innerHTML != "") {
+		   winner = true;
+		   document.getElementById("winnercircle").innerHTML = document.getElementById("tr").innerHTML + " won!";
+		   document.getElementById("strikeimg").src = "./slash.png";
+		}
+	};
+};
+
+var placeMark = function() {
+    this.innerHTML = mymarker;
+	//this.className += " me";
+	this.style.color = mycolor;
+	document.getElementById("nextplayer").innerHTML = othermarker;
+	checkWinner();
+	placeRandomOtherMark();
+	checkWinner();
+};
+
+var placeRandomOtherMark = function() {
+	var shuffled = range(0,8,true);
+	var num;
+	for (var i = 0; i < classname.length; i++) {
+		num = shuffled[i];
+		if(classname[num].innerHTML == ''){
+				classname[num].innerHTML = othermarker;
+				classname[num].style.color = othercolor;
+				document.getElementById("nextplayer").innerHTML = mymarker;
+				return;
+			};
+	};
+};
+
+var newGame = function() {
+	for (var i = 0; i < classname.length; i++) {
+		classname[i].innerHTML = '';
+	}
+	document.getElementById("winnercircle").innerHTML = "";
+	document.getElementById("strikeimg").src = "";
+    document.getElementById("strikeimg").style.margin = "0px";
+	winner = false;
+};
+
+var myMarker = function() {
+	if(mymarker == 'X'){
+		mymarker = 'O'
+		othermarker = 'X'
+	} else {
+		mymarker = 'X'
+		othermarker = 'O'
+	}
+	this.innerHTML = "I am: " + mymarker + "!";	
+	document.getElementById("nextplayer").innerHTML = mymarker;
+};
+
+var myColor = function() {
+	switch ( mycolor ) {
+		case "blue":
+			mycolor = "brown";
+			break;
+		case "brown":
+			mycolor = "DarkGoldenRod";
+			break;
+		case "DarkGoldenRod":
+			mycolor = "DarkGreen";
+			break;
+		case "DarkGreen":
+			mycolor = "DeepPink";
+			break;
+		case "DeepPink":
+			mycolor = "blue";
+			break;
+			}
+	this.innerHTML = "I am: " + mycolor + "!";
+	this.style.background = mycolor;
+	this.style.color = 'white';
+};
+
+for (var i = 0; i < classname.length; i++) {
+    classname[i].addEventListener('click', placeMark, false);
+}
+document.getElementById("newgame").addEventListener("click", newGame);
+document.getElementById("mymarker").addEventListener("click", myMarker);
+document.getElementById("mycolor").addEventListener("click", myColor);
+</script>
+</body>
+</html>
