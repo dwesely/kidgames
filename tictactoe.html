@@ -1,5 +1,7 @@
 <html>
 <head>
+<title>Tic Tac Toe</title>
+<link href="color-picker.min.css" rel="stylesheet">
 <style>
 button {
 	height: 50px;
@@ -9,7 +11,7 @@ button {
 	border-left: 5px solid #666;
 	margin: 0px 20px;
 }
-button:hover {
+button:hover, .color-picker-input:hover {
 	border: 5px solid #0aa;
 	border-top: 5px solid #0ff;
 	border-left: 5px solid #0ff;
@@ -95,10 +97,28 @@ p {
     z-index: -1;
 }
 
+
+.color-picker-box {
+  display:block;
+  border-top:1px solid;
+  border-color:inherit;
+  float:left;
+  height:16px;
+  cursor:pointer;
+}
+
+.color-picker-input {
+  height:50px;
+  font-size: 2em;
+	border: 5px solid #000;
+	border-top: 5px solid #666;
+	border-left: 5px solid #666;
+	margin-left: -20px;
+}
 </style>
 </head>
 <body>
-<div class="buttonwrapper"><button id="newgame">New Game</button><button id="mymarker">I am: X!</button><button id="mycolor">I am: blue!</button>
+<div class="buttonwrapper"><button id="newgame">New Game</button><button id="mycolor">I am:</button><input type="text" id="color-picker-input" class="color-picker-input" size="5"><button id="mymarker">I am: X!</button>
 <p>It is now <span id="nextplayer">X</span>'s turn.<span id="winnercircle"></span></div>
 <div class="wrapper"><div id="imgwrapper"><img id="strikeimg" class="diagonal" border="0"></div>
 	<div id="tl" class="square top left">X</div>
@@ -112,7 +132,7 @@ p {
 	<div id="br" class="square bottom right">X</div>
 </div>
 
-
+<script src="color-picker.min.js"></script>
 <script>
 var classname = document.getElementsByClassName("square");
 var mymarker = 'X';
@@ -229,8 +249,11 @@ var placeMark = function() {
 	checkWinner();
 	
 	// The computer places a mark
-	placeRandomOtherMark();
-	checkWinner();
+	time = range(100,800,true)
+	setTimeout(function () {
+		placeRandomOtherMark();
+		checkWinner();
+    }, time[0]);
 };
 
 var placeRandomOtherMark = function() {
@@ -282,9 +305,10 @@ var myMarker = function() {
 var refreshColor = function() {
 	// Redraw the color chooser button
 	var colorbutton = document.getElementById("mycolor")
-	colorbutton.innerHTML = "I am: " + mycolor + "!";
+	//colorbutton.innerHTML = "I am: " + mycolor + "!";
 	colorbutton.style.background = mycolor;
 	colorbutton.style.color = 'white';
+	document.getElementById("color-picker-input").style.background = mycolor;
 }
 
 var myColor = function() {
@@ -307,11 +331,40 @@ var myColor = function() {
 			mycolor = "gray";
 			break;
 		case "gray":
+			mycolor = "red";
+			break;
+		case "red":
 			mycolor = "blue";
 			break;
+		default:
+			mycolor = 'red'
 			}
 	refreshColor();
 };
+
+//https://rawgit.com/tovic/color-picker/master/color-picker.picker-set.html
+var picker = new CP(document.querySelector('input'));
+
+picker.on("change", function(color) {
+	this.target.value = '#' + color;
+	mycolor = '#' + color;
+	refreshColor();
+}, 'main-change');
+
+var colors = ['012', '123', '234', '345', '456', '567', '678', '789', '89a', '9ab'], box;
+
+for (var i = 0, len = colors.length; i < len; ++i) {
+	box = document.createElement('span');
+	box.className = 'color-picker-box';
+	box.title = '#' + colors[i];
+	box.style.backgroundColor = '#' + colors[i];
+	box.addEventListener("click", function(e) {
+		picker.set(this.title);
+		picker.trigger("change", [this.title.slice(1)], 'main-change');
+		e.stopPropagation();
+	}, false);
+	picker.picker.firstChild.appendChild(box);
+}
 
 // Place event listeners on page load
 for (var i = 0; i < classname.length; i++) {
