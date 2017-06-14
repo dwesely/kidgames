@@ -2,7 +2,7 @@
 Browser games for my kids
 
 ## Tic Tac Toe
-A quick implementation of Tic Tac Toe, where the kid can choose the color they want to be, and the computer won't win or stalemate every time.
+A quick implementation of Tic Tac Toe, where the kid can choose the color they want to be, and the computer won't win or stalemate every time. The computer is a little smarter than random when you set the level higher, but still beatable.
 ### TODO: 
 * Let kid draw lines instead of auto-drawing the winning line. Just display a flag saying somebody won.
 * Stop computer from playing once a winner is found
