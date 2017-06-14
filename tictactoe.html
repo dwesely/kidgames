@@ -118,7 +118,7 @@ p {
 </style>
 </head>
 <body>
-<div class="buttonwrapper"><button id="newgame">New Game</button><button id="mycolor">I am:</button><input type="text" id="color-picker-input" class="color-picker-input" size="5"><button id="mymarker">I am: X!</button>
+<div class="buttonwrapper"><button id="newgame">New Game</button><button id="mycolor">I am:</button><input type="text" id="color-picker-input" class="color-picker-input" size="5"><button id="mymarker">I am: X!</button><button id="mylevel">Level: 0!</button>
 <p>It is now <span id="nextplayer">X</span>'s turn.<span id="winnercircle"></span></div>
 <div class="wrapper"><div id="imgwrapper"><img id="strikeimg" class="diagonal" border="0"></div>
 	<div id="tl" class="square top left">X</div>
@@ -137,9 +137,11 @@ p {
 var classname = document.getElementsByClassName("square");
 var mymarker = 'X';
 var othermarker = 'O';
+var level = 0;
 var mycolor = 'blue';
 var othercolor = 'gray';
 var winner = false;
+var squareclasses = ["top","midv","bottom","left","midh","right"];
 
 // Get squares by name
 var tl = document.getElementById("tl");
@@ -151,6 +153,9 @@ var mr = document.getElementById("mr");
 var bl = document.getElementById("bl");
 var bm = document.getElementById("bm");
 var br = document.getElementById("br");
+
+var slashsquares = [bl,mm,tr];
+var backslashsquares = [tl,mm,br];
 
 var winnercircle = document.getElementById("winnercircle");
 var strikeimg    = document.getElementById("strikeimg");
@@ -175,7 +180,7 @@ var range = function( min, max, rand ) {
 
 var checkWinner = function() {
 	// Cycle through winning combinations to determine if 3 in a row was placed
-	if(winner == true){
+	if(winner){
 		return;
 	} else {
 		// horizontals
@@ -193,8 +198,8 @@ var checkWinner = function() {
 		   winnercircle.innerHTML = ml.innerHTML + " won!";
 		   strikeimg.src = "./horizontal.png";
 		   strikeimg.style.margin = "0px";
-		} else if(bl.innerHTML == document.getElementById("bm").innerHTML &&
-			  bl.innerHTML == document.getElementById("br").innerHTML &&
+		} else if(bl.innerHTML == bm.innerHTML &&
+			  bl.innerHTML == br.innerHTML &&
 			  bl.innerHTML != "") {
 		   winner = true;
 		   winnercircle.innerHTML = bl.innerHTML + " won!";
@@ -251,7 +256,14 @@ var placeMark = function() {
 	// The computer places a mark
 	time = range(100,800,true)
 	setTimeout(function () {
-		placeRandomOtherMark();
+		// Check difficulty level and play accordingly
+		testlevel = range( 0, 10, true );
+		if(testlevel[0] < level) {
+			//alert("clever: " + testlevel[0] + " vs. " + level);
+			placeCleverOtherMark();
+		} else {
+			placeRandomOtherMark();
+		};
 		checkWinner();
     }, time[0]);
 };
@@ -271,6 +283,108 @@ var placeRandomOtherMark = function() {
 	};
 };
 
+var placeCleverOtherMark = function() {
+	// Check the board and pick the winning move
+	// If no winning move, pick the first winnable line
+	var i;
+	var line; // array of squares to check
+	var winnable;
+	
+	//Check for winnable lines
+	for (i = 0; i < squareclasses.length; i++) {
+		line = document.getElementsByClassName(squareclasses[i]);
+		winnable = checkLineToWin(line, othermarker);
+		if(winnable) {
+			winnable.innerHTML = othermarker;
+			winnable.style.color = othercolor;
+			document.getElementById("nextplayer").innerHTML = mymarker;
+			return;
+		};
+	};
+	
+	//Check slash lines to win
+	winnable = checkLineToWin(slashsquares, othermarker);
+	if(winnable) {
+		winnable.innerHTML = othermarker;
+		winnable.style.color = othercolor;
+		document.getElementById("nextplayer").innerHTML = mymarker;
+		return;
+	};
+	winnable = checkLineToWin(backslashsquares, othermarker);
+	if(winnable) {
+		winnable.innerHTML = othermarker;
+		winnable.style.color = othercolor;
+		document.getElementById("nextplayer").innerHTML = mymarker;
+		return;
+	};
+	
+	
+	//Check for blockable lines
+	for (i = 0; i < squareclasses.length; i++) {
+		line = document.getElementsByClassName(squareclasses[i]);
+		winnable = checkLineToWin(line, mymarker);
+		if(winnable) {
+			winnable.innerHTML = othermarker;
+			winnable.style.color = othercolor;
+			document.getElementById("nextplayer").innerHTML = mymarker;
+			return;
+		};
+	};
+	
+	//Check slash lines to block
+	winnable = checkLineToWin(slashsquares, mymarker);
+	if(winnable) {
+		winnable.innerHTML = othermarker;
+		winnable.style.color = othercolor;
+		document.getElementById("nextplayer").innerHTML = mymarker;
+		return;
+	};
+	winnable = checkLineToWin(backslashsquares, mymarker);
+	if(winnable) {
+		winnable.innerHTML = othermarker;
+		winnable.style.color = othercolor;
+		document.getElementById("nextplayer").innerHTML = mymarker;
+		return;
+	};
+	
+
+	//checkLineToProgress
+	//If all else fails, place randomly
+	placeRandomOtherMark();
+};
+
+var checkLineToWin = function(elements, marker) {
+	// Check if a line is winnable
+	// Return winning position, else return false
+	var empty;
+	var filledcount = 0;
+	var emptycount = 0;
+	for (var i = 0; i < elements.length; i++) {
+		switch(elements[i].innerHTML) {
+			case marker:
+				filledcount = filledcount + 1;
+				break;
+			case "":
+				emptycount = emptycount + 1;
+				if(empty==undefined) {
+					empty = elements[i];
+				} else {
+					// Too many empty spots
+					return false;
+				};
+				break;
+			default:
+				//Contains bad guy piece
+				return false;
+		};
+	};
+	if(filledcount == 2) {
+		return empty;
+	} else {
+		return false;
+	};
+};
+
 var newGame = function() {
 	// Clear the board
 	for (var i = 0; i < classname.length; i++) {
@@ -281,6 +395,12 @@ var newGame = function() {
     	strikeimg.style.margin = "0px";
 	winner = false;
 	refreshColor();
+};
+
+var myLevel = function() {
+	level = level + 1;
+	document.getElementById("mylevel").innerHTML = "Level: " + level + "!";
+	
 };
 
 var myMarker = function() {
@@ -373,6 +493,7 @@ for (var i = 0; i < classname.length; i++) {
 document.getElementById("newgame").addEventListener("click", newGame);
 document.getElementById("mymarker").addEventListener("click", myMarker);
 document.getElementById("mycolor").addEventListener("click", myColor);
+document.getElementById("mylevel").addEventListener("click", myLevel);
 
 // Load defaults
 refreshColor();
